@@ -85,7 +85,7 @@ def get_args():
     parser.add_argument("--output_dir", type=str, default="./checkpoints")
     parser.add_argument("--log_freq", default=100, type=int)
     parser.add_argument("--eval_freq", default=100, type=int)
-    parser.add_argument("--save_freq", type=int, default=1000)
+    parser.add_argument("--save_freq", default=1000, type=int)
 
     return parser.parse_args()
 
@@ -123,9 +123,7 @@ def print_trainable_parameters(model):
 
 def prepare_sample_text(example, input_column_name="prompt", output_column_name="completion"):
     """Prepare the text from a sample of the dataset."""
-    text = f"Question: {example[input_column_name]}
-
-Answer: {example[output_column_name]}"
+    text = f"Question: {example[input_column_name]}\n\nAnswer: {example[output_column_name]}"
     return text
 
 
@@ -206,7 +204,7 @@ def create_datasets(tokenizer, args):
         print("Loading the dataset in streaming mode")
         valid_data = dataset.take(args.size_valid_set)
         train_data = dataset.skip(args.size_valid_set)
-        train_data = dataset.shuffle(buffer_size=args.shuffle_buffer, seed=args.seed)
+        train_data = train_data.shuffle(buffer_size=args.shuffle_buffer, seed=args.seed)
     else:
         train_data = dataset["train"]
         valid_data = dataset["test"]
